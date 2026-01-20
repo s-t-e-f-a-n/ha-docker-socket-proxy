@@ -1,13 +1,10 @@
-"""
-Custom integration to integrate Docker Socket Proxy with Home Assistant.
+"""Custom integration to integrate Docker Socket Proxy with Home Assistant.
 
 For more details about this integration, please refer to
 https://github.com/s-t-e-f-a-n/ha-docker-socket-proxy
-"""
-# Copyright 2026 Stefan Schmitt (s-t-e-f-a-n)
-# Licensed under the Apache License, Version 2.0
 
-"""Config flow for Docker Socket Proxy integration."""
+Config flow for Docker Socket Proxy integration.
+"""
 
 from __future__ import annotations
 
