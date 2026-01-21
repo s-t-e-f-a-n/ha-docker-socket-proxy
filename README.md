@@ -113,60 +113,136 @@ entities:
 title: Docker Containers
 ```
 
-### Flex Table Card Example
+### Combined Vertical, Horizontal and Flex Table Card Example
 
-For a comprehensive table view of all containers, use the [flex-table-card](https://github.com/custom-cards/flex-table-card):
+For an extensive table view of all containers, use the [flex-table-card](https://github.com/custom-cards/flex-table-card):
 
 ```yaml
-type: custom:flex-table-card
-title: Docker Containers
-entities:
-  include: sensor.dockersocketproxy_*
-columns:
-  - name: Container
-    data: attributes
-    modify: x.display_name
-    align: left
-  - name: State
-    data: state
-    align: center
-    modify: |
-      if (x === 'running') return '🟢 Running';
-      if (x === 'exited') return '🔴 Stopped';
-      if (x === 'paused') return '🟡 Paused';
-      return '⚪ ' + x;
-  - name: Health
-    data: attributes
-    modify: x.health
-    align: center
-    modify: |
-      if (x === 'healthy') return '✅ Healthy';
-      if (x === 'unhealthy') return '❌ Unhealthy';
-      return '❓ Unknown';
-  - name: Uptime
-    data: attributes
-    modify: x.uptime
-    align: center
-  - name: Project
-    data: attributes
-    modify: x.project
-    align: left
-  - name: Ports
-    data: attributes
-    modify: x.port_mappings.join(', ')
-    align: left
-sort_by: attributes.container_name
+type: vertical-stack
+cards:
+  - type: horizontal-stack
+    cards:
+      - type: entities
+        title: 🖥️ Host Machine
+        show_header_toggle: false
+        entities:
+          - type: attribute
+            entity: sensor.dockersocketproxy_my_docker_host_host_status
+            attribute: docker_hostname
+            name: Docker Hostname
+            icon: mdi:dns-outline
+          - type: attribute
+            entity: sensor.dockersocketproxy_my_docker_host_host_status
+            attribute: os
+            name: Operating System
+            icon: mdi:linux
+          - type: attribute
+            entity: sensor.dockersocketproxy_my_docker_host_host_status
+            attribute: arch
+            name: Architecture
+            icon: mdi:cpu-64-bit
+          - type: attribute
+            entity: sensor.dockersocketproxy_my_docker_host_host_status
+            attribute: kernel
+            name: Kernel Version
+            icon: mdi:identifier
+      - type: entities
+        title: 🐳 Docker Engine
+        show_header_toggle: false
+        entities:
+          - entity: sensor.dockersocketproxy_my_docker_host_host_status
+            name: Running/Total
+            icon: mdi:docker
+          - type: attribute
+            entity: sensor.dockersocketproxy_my_docker_host_host_status
+            attribute: version
+            name: Engine Version
+            icon: mdi:engine-outline
+          - type: attribute
+            entity: sensor.dockersocketproxy_my_docker_host_host_status
+            attribute: api_version
+            name: API Version
+            icon: mdi:api
+          - type: attribute
+            entity: sensor.dockersocketproxy_my_docker_host_host_status
+            attribute: instance_name
+            name: Instance Name
+            icon: mdi:tag-outline
+  - type: custom:flex-table-card
+    title: Docker Containers
+    entities:
+      include: sensor.dockersocketproxy_my_docker_host_*
+      exclude: sensor.dockersocketproxy_my_docker_host_host_status
+    strict: false
+    css:
+      table+: "width: 100%; border-collapse: collapse;"
+      th+: "white-space: nowrap; padding: 8px; text-align: left;"
+      td+: "padding: 8px; vertical-align: middle;"
+    columns:
+      - name: St.
+        data: state
+        modify: "x === 'running' ? '🟢' : '🔴'"
+      - name: H.
+        data: health
+        modify: "x === 'healthy' ? '🟢' : (x === 'unhealthy' ? '🔴' : '🟡')"
+      - name: Project
+        data: project
+        modify: x || 'Standalone'
+      - name: Container
+        data: display_name
+      - name: Image
+        data: image
+        modify: x.split('@')[0]
+      - name: IP Address
+        data: network_settings
+        modify: "x && x.Networks ? Object.values(x.Networks)[0]?.IPAddress || '-' : '-'"
+      - name: MAC Address
+        data: network_settings
+        modify: "x && x.Networks ? Object.values(x.Networks)[0]?.MacAddress || '-' : '-'""
+      - name: Network
+        data: network_settings
+        modify: "x && x.Networks ? Object.values(x.Networks)[0]?.NetworkType || '-' : '-'""
+      - name: Ports (Ext:Int)
+        data: port_mappings
+        modify: "x && x.length > 0 ? x.join('<br>') : '-'"
+      - name: Uptime
+        data: uptime
+        modify: "x === 'unknown' || !x ? '-' : x"
+      - name: Created
+        data: created_at
+        modify: "x && x.includes('T') ? x.split('T')[0] : '-'"
+      - name: Updated
+        data: last_update
+        modify: "x ? new Date(x).toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'}) : '-'"
+    sort_by: project+
+grid_options:
+  columns: full
+  rows: auto
 ```
 
 This creates a sortable table showing container status with icons, health indicators, and port information.
 
-### Sample Data Table
+#### 🖥️ Host Machine
+| Property | Value |
+| :--- | :--- |
+| **Docker Hostname** | `my-docker-srv` |
+| **Operating System** | `Ubuntu 22.04 LTS` |
+| **Architecture** | `x86_64` |
+| **Kernel Version** | `5.15.0-101-generic` |
 
-| Container | State      | Health     | Uptime  | Project  | Ports                  |
-|-----------|------------|------------|---------|----------|-----------------------|
-| nginx     | 🟢 Running | ✅ Healthy | 2 hours | web      | 80:80/tcp, 443:443/tcp|
-| postgres  | 🟢 Running | ❓ Unknown  | 1 week  | database | 5432:5432/tcp         |
-| redis     | 🔴 Stopped | ❓ Unknown  | -       | cache    | 6379:6379/tcp         |
+#### 🐳 Docker Engine
+| Property | Value |
+| :--- | :--- |
+| **Running/Total** | `2/3 running` |
+| **Engine Version** | `24.0.7` |
+| **API Version** | `1.43` |
+| **Instance Name** | `My Docker Host` |
+
+| St. | H. | Project | Container | Image | IP Address | Ports (Ext:Int) | Uptime | Created | Updated |
+|:---:|:---:|:---|:---|:---|:---|:---|:---|:---|:---|
+| 🟢 | 🟢 | `web-stack` | [**nginx**](http://your-ip) | `nginx:latest` | `172.18.0.10` | `80:80/tcp`<br>`443:443/tcp` | `2 hours` | `2026-01-15` | `22:26:05` |
+| 🟢 | 🟡 | `database` | **postgres** | `postgres:15` | `172.18.0.5` | `5432:5432/tcp` | `1 week` | `2026-01-01` | `22:26:05` |
+| 🔴 | 🔴 | `monitoring` | **prometheus** | `prom/prometheus` | `172.19.0.4` | `9090:9090/tcp` | `-` | `2026-01-10` | `22:26:05` |
 
 ### Advanced Dashboard with Groups
 
@@ -231,7 +307,7 @@ Contributions are welcome! Please:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License, Version 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Support
 

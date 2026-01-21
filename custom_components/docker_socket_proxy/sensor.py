@@ -213,11 +213,36 @@ class DockerContainerSensor(
         return "mdi:package-variant-closed"
 
     @property
+    def available(self) -> bool:
+        """Return True if container data is still available in coordinator."""
+        # return self._get_container_data() is not None
+        return True
+
+    @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return all enriched container attributes including ports."""
+
+        # Default attributes if data is missing
+        attrs = {
+            "host_name": getattr(self, "_host_name", "unknown"),
+            "container_name": getattr(self, "_container_name", "unknown"),
+            "display_name": getattr(self, "_container_name", "unknown"),
+            "state": "unavailable",
+            "project": "unknown",
+            "uptime": "unknown",
+            "health": "unknown",
+            "image": "unknown",
+            "port_mappings": [],
+            "network_settings": {},
+            "created_at": "unknown",
+            "last_update": dt_util.now().isoformat(),
+        }
+
+        if not self.coordinator or self.coordinator.data is None:
+            return attrs
         data = self._get_container_data()
-        if not data:
-            return {}
+        if data is None:
+            return attrs
 
         # Extract and format unique Port Mappings (e.g., 8080:80/tcp)
         # Using a set to automatically filter duplicate IPv4/IPv6 entries
@@ -235,9 +260,6 @@ class DockerContainerSensor(
             elif private:
                 # Result: "80/tcp"
                 port_mappings_set.add(f"{private}/{p_type}")
-
-        # sorted() returns a new list from the set directly
-        port_mappings = sorted(port_mappings_set)
 
         # Handle Service URLs for the display name link
         urls: list[dict[str, Any]] = data.get("ServiceUrls", [])
@@ -258,17 +280,18 @@ class DockerContainerSensor(
             except (ValueError, TypeError):
                 created_iso = "unknown"
 
-        return {
-            "host_name": self._host_name,
-            "container_name": self._container_name,
-            "display_name": display_name,
-            "project": data.get("Project"),
-            "state": data.get("State"),
-            "uptime": data.get("uptime"),
-            "health": data.get("health"),
-            "created_at": created_iso,
-            "image": data.get("Image"),
-            "network_settings": data.get("NetworkSettings"),
-            "port_mappings": port_mappings,
-            "last_update": dt_util.now().isoformat(),
-        }
+        attrs.update(
+            {
+                "display_name": display_name,
+                "project": data.get("Project", "Standalone"),
+                "state": data.get("State"),
+                "uptime": data.get("uptime"),
+                "health": data.get("health"),
+                "created_at": created_iso,
+                "image": data.get("Image"),
+                "network_settings": data.get("NetworkSettings"),
+                "port_mappings": sorted(port_mappings_set),
+            }
+        )
+
+        return attrs
