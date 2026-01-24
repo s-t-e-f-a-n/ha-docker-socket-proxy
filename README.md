@@ -280,6 +280,25 @@ card_mod:
     }
 ```
 
+## Blueprints
+
+This integration comes with a built-in blueprint to make monitoring even easier.
+
+### Docker Proxy Health Alert
+
+Automatically receive push notifications on your phone if:
+
+- A container's health check turns **unhealthy**.
+- The Docker host or proxy becomes **unavailable**.
+
+**Actionable Notification:** The alert includes a "View Details" button that takes you directly to the Home Assistant devices page for quick troubleshooting.
+
+#### How to use
+
+1. Ensure the **Home Assistant Companion App** is installed on your phone.
+2. Go to **Settings** → **Automations & Scenes** → **Blueprints**.
+3. Locate **Docker Socket Proxy: Health Alert** and click **Create Automation**.
+
 ## Troubleshooting
 
 ### Common Issues

@@ -1,22 +1,26 @@
 blueprint:
-  name: Docker Proxy Health Alert
-  description: Get notified when your Docker Socket Proxy becomes unhealthy or unavailable.
+  name: "Docker Socket Proxy: Health Alert"
+  description: "Sends a notification when the Docker Proxy goes offline or a container becomes 'unhealthy'."
   domain: automation
   input:
     proxy_sensor:
-      name: Proxy Sensor
-      description: Select the sensor representing your Docker Socket Proxy container.
+      name: Docker Container/Socket Proxy Sensor
+      description: Select the sensor from your Docker Socket Proxy integration.
       selector:
         entity:
           filter:
             - integration: docker_socket_proxy
     notify_device:
       name: Notification Device
-      description: Device to receive the alert.
+      description: Which device should receive the alert?
       selector:
         device:
           filter:
             - integration: mobile_app
+
+variables:
+  proxy_sensor_entity: !input proxy_sensor
+  friendly_name: "{{ state_attr(proxy_sensor_entity, 'friendly_name') | default(proxy_sensor_entity) }}"
 
 trigger:
   - platform: state
@@ -33,9 +37,16 @@ action:
   - domain: mobile_app
     type: notify
     device_id: !input notify_device
-    title: "🐳 Docker Proxy Alert"
+    title: "🐳 Docker Alert: {{ friendly_name }}"
     message: >
-      The Docker Proxy {{ state_attr(base_entity, 'friendly_name') }}
-      is currently {{ states(base_entity) }}.
-      Health: {{ state_attr(base_entity, 'health') }}
+      Attention! The status of '{{ friendly_name }}' has changed.
+      Current State: {{ states(proxy_sensor_entity) }}
+      Health Status: {{ state_attr(proxy_sensor_entity, 'health') | default('N/A') }}
+    data:
+      priority: high
+      clickAction: "/config/devices"
+      actions:
+        - action: "URI"
+          title: "View Details"
+          uri: "/config/devices"
 mode: single
