@@ -1,6 +1,11 @@
-# Docker Socket Proxy
+# HA Docker Socket Proxy
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+![HA Docker Socket Proxy Logo](assets/logo.png)
+
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+![Version](https://img.shields.io/github/v/release/s-t-e-f-a-n/ha-docker-socket-proxy)
+![License](https://img.shields.io/github/license/s-t-e-f-a-n/ha-docker-socket-proxy)
+
 
 A Home Assistant integration that monitors Docker containers through a Docker socket proxy, providing real-time status, health checks, and service URLs for your containerized applications.
 

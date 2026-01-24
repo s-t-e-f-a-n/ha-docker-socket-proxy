@@ -215,8 +215,7 @@ class DockerContainerSensor(
     @property
     def available(self) -> bool:
         """Return True if container data is still available in coordinator."""
-        # return self._get_container_data() is not None
-        return True
+        return self._get_container_data() is not None
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
