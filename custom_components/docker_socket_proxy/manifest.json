@@ -1,12 +1,12 @@
 {
   "domain": "docker_socket_proxy",
   "name": "Docker Socket Proxy",
-  "version": "1.0.2",
+  "codeowners": ["@s-t-e-f-a-n"],
   "config_flow": true,
+  "documentation": "https://github.com/s-t-e-f-a-n/ha_docker_socket_proxy",
   "integration_type": "hub",
   "iot_class": "local_polling",
-  "requirements": [],
-  "documentation": "https://github.com/s-t-e-f-a-n/ha_docker_socket_proxy",
   "issue_tracker": "https://github.com/s-t-e-f-a-n/ha_docker_socket_proxy/issues",
-  "codeowners": ["@s-t-e-f-a-n"]
+  "requirements": [],
+  "version": "1.0.2"
 }
