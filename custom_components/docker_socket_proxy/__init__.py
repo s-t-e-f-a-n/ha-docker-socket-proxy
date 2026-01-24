@@ -38,11 +38,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Forward the setup to the defined platforms (sensor.py)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
+    # This listener detects when "Submit" is clicked in the options menu
+    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
+
     return True
+
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload the integration when options are changed."""
     await hass.config_entries.async_reload(entry.entry_id)
+
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""

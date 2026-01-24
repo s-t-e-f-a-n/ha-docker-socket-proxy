@@ -30,7 +30,6 @@ from .const import (
     ATTR_VERSION,
     CONF_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
-    DOMAIN,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -45,15 +44,15 @@ class DockerDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.host_name = entry.title
 
         scan_interval = entry.options.get(
-            CONF_SCAN_INTERVAL, 
-            entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+            CONF_SCAN_INTERVAL,
+            entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
         )
 
         super().__init__(
             hass,
             _LOGGER,
             name=f"Docker {entry.title}",
-            update_interval=timedelta(seconds=scan_interval),
+            update_interval=timedelta(seconds=int(scan_interval)),
         )
 
     def _validate_result(self, result: Any) -> ClientResponse:
