@@ -28,6 +28,7 @@ from .const import (
     ATTR_CONTAINERS,
     ATTR_DOCKER_HOSTNAME,
     ATTR_VERSION,
+    CONF_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
 )
@@ -43,11 +44,16 @@ class DockerDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.url = entry.data[CONF_URL].rstrip("/")
         self.host_name = entry.title
 
+        scan_interval = entry.options.get(
+            CONF_SCAN_INTERVAL, 
+            entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+        )
+
         super().__init__(
             hass,
             _LOGGER,
-            name=f"{DOMAIN} ({self.host_name})",
-            update_interval=timedelta(seconds=DEFAULT_SCAN_INTERVAL),
+            name=f"Docker {entry.title}",
+            update_interval=timedelta(seconds=scan_interval),
         )
 
     def _validate_result(self, result: Any) -> ClientResponse:
