@@ -1,7 +1,7 @@
 {
   "domain": "docker_socket_proxy",
   "name": "Docker Socket Proxy",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "config_flow": true,
   "integration_type": "hub",
   "iot_class": "local_polling",
