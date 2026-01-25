@@ -1,10 +1,5 @@
 {
   "name": "Docker Socket Proxy",
   "render_readme": true,
-  "category": "integration",
-  "zip_release": false,
-  "filename": "docker_socket_proxy",
-  "domains": ["docker_socket_proxy"],
-  "country": [],
   "homeassistant": "2024.1.0"
 }
