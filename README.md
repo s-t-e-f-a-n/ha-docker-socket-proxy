@@ -1,6 +1,6 @@
 # HA Docker Socket Proxy
 
-![HA Docker Socket Proxy Logo](assets/logo.png)
+![HA Docker Socket Proxy Logo](assets/banner.png)
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 ![License](https://img.shields.io/github/license/s-t-e-f-a-n/ha_docker_socket_proxy)
